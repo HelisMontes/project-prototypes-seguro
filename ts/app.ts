@@ -74,6 +74,42 @@ UI.prototype.message = (message:string, type:string) => {
     },2000)
 }
 
+UI.prototype.showHTML_Cotizacion = (total:number, seguro:any) => {
+    const resultado = document.querySelector('#resultado');
+    let make;
+    const {marca, year, tipo} = seguro
+
+     switch(marca) {
+          case '1':
+               make = 'Americano';
+               break;
+          case '2':
+                make = 'Asiatico';
+               break;
+          case '3':
+                make = 'Europeo';
+               break;
+     }
+     // Crear un div
+     const div = document.createElement('div');
+     div.classList.add('mt-10')
+     // Insertar la informacion
+     div.innerHTML = `
+          <p class='header'>Tu Resumen: </p>
+          <p class="font-bold">Marca: <span class="font-normal"> ${make} </span> </p>
+          <p class="font-bold">Año: <span class="font-normal"> ${year} </span> </p>
+          <p class="font-bold">Tipo: <span class="font-normal"> ${tipo} </span> </p>
+          <p class="font-bold"> Total: <span class="font-normal"> $${total.toFixed(2)} </span> </p>
+     `;
+
+    const spinner:any = document.querySelector('#cargando');
+     spinner.style.display = 'block';
+     setTimeout( () =>  {
+          spinner.style.display = 'none';
+          resultado.appendChild(div);
+     }, 3000);
+}
+
 const removeMessage = ()=>{
     const message = document.querySelector('div .mensaje');
     if(message){
@@ -101,8 +137,15 @@ const validateForm = ():void =>{
         return;
     }
     ui.message('Cotizando....', 'correcto');
+    // Limpiar resultados anteriores
+    const resultados = document.querySelector('#resultado div');
+    if(resultados != null) {
+         resultados.remove();
+    }
 
     const seguro = new Seguro(marca.value, Number(year.value), tipo.value);
-    seguro.cotizarSeguro();
+    const total =  seguro.cotizarSeguro();
+    ui.showHTML_Cotizacion(total, seguro);
+
 }
 eventListener();
